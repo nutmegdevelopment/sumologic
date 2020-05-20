@@ -4,7 +4,7 @@ import (
 	"flag"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/coreos/go-systemd/sdjournal"
 	"github.com/nutmegdevelopment/sumologic/buffer"
 	"github.com/nutmegdevelopment/sumologic/upload"

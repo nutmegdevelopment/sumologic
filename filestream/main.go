@@ -4,7 +4,7 @@ import (
 	"flag"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/hpcloud/tail"
 	"github.com/nutmegdevelopment/sumologic/buffer"
 	"github.com/nutmegdevelopment/sumologic/upload"
