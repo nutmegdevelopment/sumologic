@@ -4,14 +4,9 @@ import (
 	"bytes"
 	"sync"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/nutmegdevelopment/sumologic/debuglog"
 	"github.com/nutmegdevelopment/sumologic/upload"
 )
-
-// DebugLogging enables debug logging
-func DebugLogging() {
-	log.SetLevel(log.DebugLevel)
-}
 
 type sender interface {
 	send([]byte, string) error
@@ -70,13 +65,13 @@ func (b *Buffer) Send(u upload.Uploader) (err error) {
 		}
 	}
 
-	log.Debugf("%d unique names in buffer", len(packets))
+	log.Logf("%d unique names in buffer", len(packets))
 
 	ch := make(chan error, 2048)
 	var wg sync.WaitGroup
 
 	for n := range packets {
-		log.Debugf("Sending data for name: %s (%d bytes)", n, len(packets[n]))
+		log.Logf("Sending data for name: %s (%d bytes)", n, len(packets[n]))
 		wg.Add(1)
 		// Copy n
 		name := n

@@ -7,13 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/nutmegdevelopment/sumologic/debuglog"
 )
-
-// DebugLogging enables debug logging
-func DebugLogging() {
-	log.SetLevel(log.DebugLevel)
-}
 
 // GzipThreshold sets the threshold size over which messages
 // are compressed when sent.
@@ -56,7 +51,7 @@ func (u *httpUploader) Send(input []byte, name string) (err error) {
 	client.Timeout = 60 * time.Second
 
 	if len(input) > GzipThreshold {
-		log.Debugf("Data over threshold, compressing (%s bytes)", len(input))
+		log.Logf("Data over threshold, compressing (%s bytes)", len(input))
 		w := gzip.NewWriter(buf)
 		n, err := w.Write(input)
 		if err != nil {
@@ -100,7 +95,7 @@ func (u *httpUploader) Send(input []byte, name string) (err error) {
 		return
 	}
 
-	log.Debugf("Response: %s", resp.Status)
+	log.Logf("Response: %s", resp.Status)
 
 	if resp.StatusCode != 200 {
 		return errors.New(resp.Status)

@@ -2,11 +2,12 @@ package main // import "github.com/nutmegdevelopment/sumologic/journalstream"
 
 import (
 	"flag"
+	"fmt"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/coreos/go-systemd/sdjournal"
 	"github.com/nutmegdevelopment/sumologic/buffer"
+	log "github.com/nutmegdevelopment/sumologic/debuglog"
 	"github.com/nutmegdevelopment/sumologic/upload"
 )
 
@@ -28,9 +29,7 @@ func init() {
 	flag.Parse()
 
 	if *debug {
-		buffer.DebugLogging()
-		upload.DebugLogging()
-		log.SetLevel(log.DebugLevel)
+		log.Enable()
 	}
 }
 
@@ -40,13 +39,13 @@ func watch(eventCh chan<- *sdjournal.JournalEntry, quitChan <-chan bool) {
 		log.Fatal(err)
 	}
 
-	log.Debug("Journald watcher started")
+	log.Log("Journald watcher started")
 
 	err = j.SeekTail()
 	if err != nil {
-		log.Fatal("Unable to seek to end of journal")
+		log.Fatal(fmt.Errorf("Unable to seek to end of journal: %+v", err))
 	}
-	log.Debug("Journal seek completed")
+	log.Log("Journal seek completed")
 
 	defer close(eventCh)
 
@@ -62,20 +61,20 @@ func watch(eventCh chan<- *sdjournal.JournalEntry, quitChan <-chan bool) {
 
 			if n == 0 {
 				// At the end of the journal, wait for new entries
-				log.Debug("Waiting for new journal entries")
+				log.Log("Waiting for new journal entries")
 				ret := j.Wait(300 * time.Second)
 				if ret < 0 {
-					log.Fatalf("Error waiting for journal entries: %d", ret)
+					log.Fatal(fmt.Errorf("Error waiting for journal entries: %d", ret))
 				}
 				if ret == sdjournal.SD_JOURNAL_NOP {
-					log.Warn("No journal entries for 300 seconds")
+					log.Log("No journal entries for 300 seconds")
 				}
 				continue
 			}
 
 			entry, err := j.GetEntry()
 			if err != nil {
-				log.Error(err)
+				log.Log(err)
 				continue
 			}
 			eventCh <- entry
@@ -137,7 +136,7 @@ func main() {
 		time.Sleep(time.Second * time.Duration(bTime))
 		err := buf.Send(uploader)
 		if err != nil {
-			log.Error(err)
+			log.Log(err)
 		}
 	}
 }

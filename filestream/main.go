@@ -4,9 +4,9 @@ import (
 	"flag"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/hpcloud/tail"
 	"github.com/nutmegdevelopment/sumologic/buffer"
+	log "github.com/nutmegdevelopment/sumologic/debuglog"
 	"github.com/nutmegdevelopment/sumologic/upload"
 )
 
@@ -28,9 +28,7 @@ func init() {
 	flag.Parse()
 
 	if *debug {
-		buffer.DebugLogging()
-		upload.DebugLogging()
-		log.SetLevel(log.DebugLevel)
+		log.Enable()
 	}
 }
 
